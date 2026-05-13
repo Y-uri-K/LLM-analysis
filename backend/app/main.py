@@ -9,7 +9,7 @@ from pathlib import Path
 app = FastAPI()
 
 _cors_raw = os.environ.get(
-    "CORS_ORIGINS",
+    "NEXT_PUBLIC_API_URL",
     "http://localhost:3000",
 )
 _cors_origins = [o.strip() for o in _cors_raw.split(",") if o.strip()]
