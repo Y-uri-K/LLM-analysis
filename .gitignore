@@ -1,0 +1,105 @@
+# =========================
+# ROOT
+# =========================
+
+.env
+.env.local
+.env.*.local
+
+*.log
+*.tmp
+*.temp
+
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# =========================
+# FRONTEND (Next.js)
+# =========================
+
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+frontend/.turbo/
+
+# TypeScript
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+
+# Coverage
+frontend/coverage/
+
+# =========================
+# BACKEND (Python / FastAPI)
+# =========================
+
+backend/__pycache__/
+backend/**/*.py[cod]
+
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.ruff_cache/
+
+backend/.coverage
+backend/htmlcov/
+
+backend/.env
+backend/.venv/
+backend/venv/
+backend/env/
+
+# Jupyter
+backend/.ipynb_checkpoints/
+
+# Uploaded datasets
+backend/uploads/
+
+# Generated charts/reports
+backend/generated/
+backend/charts/
+backend/reports/
+backend/temp/
+
+# SQLite
+backend/*.db
+backend/*.sqlite3
+
+# Logs
+backend/logs/
+backend/*.log
+
+# =========================
+# DOCKER
+# =========================
+
+docker-data/
+*.pid
+
+# =========================
+# OS
+# =========================
+
+ehthumbs.db
+Desktop.ini
+
+# =========================
+# OPTIONAL AI CACHE
+# =========================
+
+.cache/
+langchain.db
