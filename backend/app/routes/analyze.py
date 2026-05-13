@@ -1,10 +1,13 @@
-from fastapi import APIRouter, UploadFile, File, Form
-from app.services.llm_analyzer import analyze_with_llm
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from pydantic import BaseModel
+from app.services.llm_analyzer import analyze_with_llm, answer_question_with_llm
 
 import pandas as pd
 import io
+import uuid
 
 router = APIRouter()
+DATASET_STORE: dict[str, pd.DataFrame] = {}
 
 
 # Простая защита от prompt injection
@@ -29,6 +32,11 @@ def is_prompt_safe(prompt: str) -> bool:
     return True
 
 
+class AskRequest(BaseModel):
+    dataset_id: str
+    question: str
+
+
 @router.post("/analyze")
 async def analyze(
     file: UploadFile = File(...),
@@ -37,9 +45,10 @@ async def analyze(
 
     # Проверка prompt injection
     if not is_prompt_safe(prompt):
-        return {
-            "error": "Unsafe prompt detected"
-        }
+        raise HTTPException(
+            status_code=400,
+            detail="Unsafe prompt detected"
+        )
 
     # Читаем файл
     content = await file.read()
@@ -55,14 +64,16 @@ async def analyze(
             df = pd.read_excel(io.BytesIO(content))
 
         else:
-            return {
-                "error": "Unsupported file format"
-            }
+            raise HTTPException(
+                status_code=400,
+                detail="Unsupported file format"
+            )
 
     except Exception as e:
-        return {
-            "error": f"Failed to parse file: {str(e)}"
-        }
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to parse file: {str(e)}"
+        )
 
     # Ограничение размера dataset
     MAX_ROWS = 10000
@@ -71,19 +82,23 @@ async def analyze(
         df = df.head(MAX_ROWS)
 
     try:
-
         # AI-анализ
-        report = analyze_with_llm(
+        report, charts = analyze_with_llm(
             df=df,
             user_prompt=prompt
         )
 
     except Exception as e:
-        return {
-            "error": f"LLM analysis failed: {str(e)}"
-        }
+        raise HTTPException(
+            status_code=500,
+            detail=f"LLM analysis failed: {str(e)}"
+        )
+
+    dataset_id = uuid.uuid4().hex
+    DATASET_STORE[dataset_id] = df.copy()
 
     return {
+        "dataset_id": dataset_id,
         "report": report,
         "metadata": {
             "rows": int(df.shape[0]),
@@ -91,5 +106,34 @@ async def analyze(
             "column_names": list(df.columns),
             "file_name": file.filename
         },
-        "charts": []
+        "charts": charts
+    }
+
+
+@router.post("/ask")
+async def ask_question(payload: AskRequest):
+    if not payload.question.strip():
+        raise HTTPException(status_code=400, detail="Question is required")
+
+    if not is_prompt_safe(payload.question):
+        raise HTTPException(status_code=400, detail="Unsafe prompt detected")
+
+    dataset = DATASET_STORE.get(payload.dataset_id)
+    if dataset is None:
+        raise HTTPException(status_code=404, detail="Dataset session not found")
+
+    try:
+        answer, charts = answer_question_with_llm(
+            df=dataset,
+            user_question=payload.question.strip()
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"LLM Q&A failed: {str(e)}"
+        )
+
+    return {
+        "answer": answer,
+        "charts": charts,
     }

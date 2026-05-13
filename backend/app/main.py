@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.routes.analyze import router
+from pathlib import Path
 
 app = FastAPI()
 
@@ -13,6 +15,11 @@ app.add_middleware(
 )
 
 app.include_router(router)
+
+static_dir = Path(__file__).resolve().parent / "static"
+charts_dir = static_dir / "charts"
+charts_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/charts", StaticFiles(directory=charts_dir), name="charts")
 
 
 @app.get("/")
