@@ -90,7 +90,28 @@ next-env.d.ts
 # =========================
 # BACKEND (Python / FastAPI)
 # =========================
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
 
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+
+# Pytest
+.pytest_cache/
+
+# Mypy
+.mypy_cache/
+
+# Ruff
+.ruff_cache/
 backend/__pycache__/
 backend/**/*.py[cod]
 
