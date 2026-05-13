@@ -9,8 +9,6 @@ import uuid
 router = APIRouter()
 DATASET_STORE: dict[str, pd.DataFrame] = {}
 
-
-# Простая защита от prompt injection
 BLOCKED_PATTERNS = [
     "ignore previous instructions",
     "system prompt",
@@ -43,23 +41,19 @@ async def analyze(
     prompt: str = Form("")
 ):
 
-    # Проверка prompt injection
     if not is_prompt_safe(prompt):
         raise HTTPException(
             status_code=400,
             detail="Unsafe prompt detected"
         )
 
-    # Читаем файл
     content = await file.read()
 
     try:
 
-        # CSV
         if file.filename.endswith(".csv"):
             df = pd.read_csv(io.BytesIO(content))
 
-        # Excel
         elif file.filename.endswith((".xlsx", ".xls")):
             df = pd.read_excel(io.BytesIO(content))
 
@@ -75,14 +69,12 @@ async def analyze(
             detail=f"Failed to parse file: {str(e)}"
         )
 
-    # Ограничение размера dataset
     MAX_ROWS = 10000
 
     if len(df) > MAX_ROWS:
         df = df.head(MAX_ROWS)
 
     try:
-        # AI-анализ
         report, charts = analyze_with_llm(
             df=df,
             user_prompt=prompt

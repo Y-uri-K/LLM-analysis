@@ -90,14 +90,11 @@ def _execute_python_tool(code: str, df: pd.DataFrame, charts_dir: Path) -> dict:
 
     stdout_buffer = io.StringIO()
     with redirect_stdout(stdout_buffer):
-        # Use one shared scope so df/pd/np are always visible
-        # across statements, comprehensions and nested blocks.
         exec(code, execution_scope, execution_scope)
 
     result_value = execution_scope.get("result")
     used_fallback_result = result_value is None
     if used_fallback_result:
-        # Гарантируем, что инструмент всегда возвращает полезные вычисленные данные.
         result_value = {
             "rows": int(df.shape[0]),
             "columns": int(df.shape[1]),

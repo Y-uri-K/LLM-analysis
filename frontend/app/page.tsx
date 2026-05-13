@@ -205,220 +205,239 @@ export default function HomePage() {
   };
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white px-6 py-10 flex justify-center">
-      <div className="max-w-5xl mx-auto">
-        <div className="mb-10">
-          <h1 className="text-5xl font-bold mb-4">
-            LLM Analyst
-          </h1>
+    <main className="min-h-screen bg-zinc-950 text-white px-4 sm:px-6 py-6 sm:py-10">
+  <div className="w-full max-w-5xl mx-auto">
+    <div className="mb-8 sm:mb-10">
+      <h1 className="text-3xl sm:text-5xl font-bold mb-4">
+        LLM Analyst
+      </h1>
 
-          <p className="text-zinc-400 text-lg">
-            Загрузите набор данных в формате CSV или Excel, и позвольте ИИ автоматически анализировать даный датасет.
-          </p>
+      <p className="text-zinc-400 text-base sm:text-lg leading-relaxed">
+        Загрузите набор данных в формате CSV или Excel,
+        и позвольте ИИ автоматически анализировать данный датасет.
+      </p>
+    </div>
+
+    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-6 mb-8">
+      <div className="mb-6">
+        <label className="block text-base sm:text-lg font-bold italic mb-2 text-zinc-300">
+          Загрузите файл
+        </label>
+
+        <input
+          type="file"
+          accept=".csv,.xlsx,.xls"
+          onChange={(e) =>
+            setFile(e.target.files?.[0] || null)
+          }
+          className="block w-full text-sm text-zinc-300
+          file:mr-3
+          file:py-2
+          file:px-4
+          file:rounded-lg
+          file:border-0
+          file:bg-white
+          file:text-black
+          file:text-sm
+          hover:file:bg-zinc-200"
+        />
+      </div>
+
+      <div className="mb-6">
+        <label className="block text-sm mb-2 text-zinc-300">
+          Инструкции для ИИ-агента
+        </label>
+
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Пример: выяви аномалии, построй графики и определи корреляции"
+          className="w-full h-32 sm:h-36 bg-zinc-950 border border-zinc-800 rounded-xl p-4 outline-none focus:border-zinc-600 resize-none text-sm sm:text-base"
+        />
+      </div>
+
+      <button
+        onClick={handleUpload}
+        disabled={loading}
+        className="w-full sm:w-auto bg-white text-black px-6 py-3 rounded-xl font-medium hover:bg-zinc-200 transition disabled:opacity-50"
+      >
+        {loading
+          ? "Идёт анализ датасета..."
+          : "Анализировать"}
+      </button>
+
+      {error && (
+        <div className="mt-4 text-red-400 text-sm sm:text-base break-words">
+          {error}
+        </div>
+      )}
+    </div>
+
+    {loading && (
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-6 bg-zinc-800 rounded w-1/3"></div>
+          <div className="h-4 bg-zinc-800 rounded"></div>
+          <div className="h-4 bg-zinc-800 rounded"></div>
+          <div className="h-4 bg-zinc-800 rounded w-2/3"></div>
         </div>
 
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-8">
-          <div className="mb-6">
-            <label className="block text-lg font-bold italic mb-2 text-zinc-300">
-              Загрузите файл
-            </label>
-
-            <input
-              type="file"
-              accept=".csv,.xlsx,.xls"
-              onChange={(e) =>
-                setFile(e.target.files?.[0] || null)
-              }
-              className="block w-full text-sm text-zinc-300
-              file:mr-4
-              file:py-2
-              file:px-4
-              file:rounded-lg
-              file:border-0
-              file:bg-white
-              file:text-black
-              hover:file:bg-zinc-200"
-            />
+        <div className="mt-6">
+          <div className="flex justify-between text-xs text-zinc-400 mb-2">
+            <span>Загрузка файла</span>
+            <span>{uploadProgress}%</span>
           </div>
 
-          <div className="mb-6">
-            <label className="block text-sm mb-2 text-zinc-300">
-              Инструкции для ИИ-агента
-            </label>
-
-            <textarea
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Пример: выяви аномалии, построй графики и определи корреляции"
-              className="w-full h-36 bg-zinc-950 border border-zinc-800 rounded-xl p-4 outline-none focus:border-zinc-600 resize-none"
+          <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-white transition-all duration-200"
+              style={{ width: `${uploadProgress}%` }}
             />
           </div>
-
-          <button
-            onClick={handleUpload}
-            disabled={loading}
-            className="bg-white text-black px-6 py-3 rounded-xl font-medium hover:bg-zinc-200 transition disabled:opacity-50"
-          >
-            {loading ? "Идёт анализ датасета..." : "Анализировать"}
-          </button>
-
-          {error && (
-            <div className="mt-4 text-red-400">
-              {error}
-            </div>
-          )}
         </div>
 
-        {loading && (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-            <div className="animate-pulse space-y-4">
-              <div className="h-6 bg-zinc-800 rounded w-1/3"></div>
-              <div className="h-4 bg-zinc-800 rounded"></div>
-              <div className="h-4 bg-zinc-800 rounded"></div>
-              <div className="h-4 bg-zinc-800 rounded w-2/3"></div>
-            </div>
+        <p className="mt-6 text-zinc-400 text-sm sm:text-base">
+          Агент анализирует датасет...
+        </p>
+      </div>
+    )}
 
-            <div className="mt-6">
-              <div className="flex justify-between text-xs text-zinc-400 mb-2">
-                <span>Загрузка файла</span>
-                <span>{uploadProgress}%</span>
-              </div>
-              <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+    {result && (
+      <div className="space-y-6 sm:space-y-8">
+        <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-8 overflow-hidden">
+          <h2 className="text-2xl sm:text-3xl font-semibold mb-6">
+            Готовый отчёт
+          </h2>
+
+          <div className="prose prose-invert max-w-none prose-sm sm:prose-base overflow-x-auto">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                table: ({ ...props }) => (
+                  <div className="overflow-x-auto my-4">
+                    <table
+                      className="min-w-full border border-zinc-700 text-sm"
+                      {...props}
+                    />
+                  </div>
+                ),
+                thead: ({ ...props }) => (
+                  <thead className="bg-zinc-800" {...props} />
+                ),
+                th: ({ ...props }) => (
+                  <th
+                    className="border border-zinc-700 px-3 py-2 text-left whitespace-nowrap"
+                    {...props}
+                  />
+                ),
+                td: ({ ...props }) => (
+                  <td
+                    className="border border-zinc-700 px-3 py-2 align-top"
+                    {...props}
+                  />
+                ),
+              }}
+            >
+              {result.report}
+            </ReactMarkdown>
+          </div>
+        </section>
+
+        {result?.charts?.length > 0 && (
+          <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-8">
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-6">
+              Generated Charts
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              {result.charts.map((chart, index) => (
                 <div
-                  className="h-full bg-white transition-all duration-200"
-                  style={{ width: `${uploadProgress}%` }}
-                />
-              </div>
+                  key={index}
+                  className="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden"
+                >
+                  <img
+                    src={`${API_URL}/${chart}`}
+                    alt={`Chart ${index}`}
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
+              ))}
             </div>
-
-            <p className="mt-6 text-zinc-400">
-              Агент анализирует датасет....
-            </p>
-          </div>
+          </section>
         )}
 
-        {result && (
-          <div className="space-y-8">
-            <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
-              <h2 className="text-3xl font-semibold mb-6">
-                Готовый отчёт
-              </h2>
+        <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-8">
+          <h2 className="text-2xl sm:text-3xl font-semibold mb-6">
+            Вопросы по датасету
+          </h2>
 
-              <div className="prose prose-invert max-w-none">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    table: ({ ...props }) => (
-                      <div className="overflow-x-auto my-4">
-                        <table
-                          className="min-w-full border border-zinc-700 text-sm"
-                          {...props}
-                        />
-                      </div>
-                    ),
-                    thead: ({ ...props }) => (
-                      <thead className="bg-zinc-800" {...props} />
-                    ),
-                    th: ({ ...props }) => (
-                      <th
-                        className="border border-zinc-700 px-3 py-2 text-left"
-                        {...props}
-                      />
-                    ),
-                    td: ({ ...props }) => (
-                      <td
-                        className="border border-zinc-700 px-3 py-2 align-top"
-                        {...props}
-                      />
-                    ),
-                  }}
-                >
-                  {result.report}
-                </ReactMarkdown>
-              </div>
-            </section>
+          <p className="text-zinc-400 mb-4 text-sm sm:text-base">
+            Можно продолжить диалог по уже загруженному датасету.
+          </p>
 
-            {result?.charts?.length > 0 && (
-              <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
-                <h2 className="text-3xl font-semibold mb-6">
-                  Generated Charts
-                </h2>
+          <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            <textarea
+              value={followUpQuestion}
+              onChange={(e) =>
+                setFollowUpQuestion(e.target.value)
+              }
+              placeholder="Пример: найди топ-5 клиентов по выручке"
+              className="flex-1 h-24 bg-zinc-950 border border-zinc-800 rounded-xl p-4 outline-none focus:border-zinc-600 resize-none text-sm sm:text-base"
+            />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {result.charts.map((chart, index) => (
-                    <div
-                      key={index}
-                      className="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden"
-                    >
-                      <img
-                        src={`${API_URL}/${chart}`}
-                        alt={`Chart ${index}`}
-                        className="w-full"
-                      />
-                    </div>
-                  ))}
+            <button
+              onClick={handleAskQuestion}
+              disabled={chatLoading}
+              className="w-full sm:w-auto bg-white text-black px-5 py-3 rounded-xl font-medium hover:bg-zinc-200 transition disabled:opacity-50"
+            >
+              {chatLoading ? "Думаю..." : "Спросить"}
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {chatHistory.map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 overflow-hidden"
+              >
+                <div className="text-zinc-300 mb-3 text-sm sm:text-base break-words">
+                  <span className="font-semibold">
+                    Вопрос:
+                  </span>{" "}
+                  {item.question}
                 </div>
-              </section>
-            )}
 
-            <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
-              <h2 className="text-3xl font-semibold mb-6">
-                Вопросы по датасету
-              </h2>
-              <p className="text-zinc-400 mb-4">
-                Можно продолжить диалог по уже загруженному датасету.
-              </p>
-
-              <div className="flex gap-3 mb-6">
-                <textarea
-                  value={followUpQuestion}
-                  onChange={(e) => setFollowUpQuestion(e.target.value)}
-                  placeholder="Пример: найди топ-5 клиентов по выручке и объясни почему"
-                  className="flex-1 h-24 bg-zinc-950 border border-zinc-800 rounded-xl p-4 outline-none focus:border-zinc-600 resize-none"
-                />
-                <button
-                  onClick={handleAskQuestion}
-                  disabled={chatLoading}
-                  className="bg-white text-black px-5 py-3 rounded-xl font-medium hover:bg-zinc-200 transition disabled:opacity-50 h-fit"
-                >
-                  {chatLoading ? "Думаю..." : "Спросить"}
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {chatHistory.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-zinc-950 border border-zinc-800 rounded-xl p-4"
+                <div className="prose prose-invert prose-sm sm:prose-base max-w-none overflow-x-auto">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
                   >
-                    <div className="text-zinc-300 mb-3">
-                      <span className="font-semibold">Вопрос:</span>{" "}
-                      {item.question}
-                    </div>
-                    <div className="prose prose-invert max-w-none">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {item.answer}
-                      </ReactMarkdown>
-                    </div>
-                    {item.charts.length > 0 && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        {item.charts.map((chart, chartIndex) => (
-                          <img
-                            key={chartIndex}
-                            src={`${API_URL}/${chart}`}
-                            alt={`Follow-up chart ${chartIndex + 1}`}
-                            className="w-full bg-zinc-900 rounded-lg border border-zinc-800"
-                          />
-                        ))}
-                      </div>
+                    {item.answer}
+                  </ReactMarkdown>
+                </div>
+
+                {item.charts.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    {item.charts.map(
+                      (chart, chartIndex) => (
+                        <img
+                          key={chartIndex}
+                          src={`${API_URL}/${chart}`}
+                          alt={`Follow-up chart ${
+                            chartIndex + 1
+                          }`}
+                          className="w-full h-auto bg-zinc-900 rounded-lg border border-zinc-800"
+                        />
+                      )
                     )}
                   </div>
-                ))}
+                )}
               </div>
-            </section>
+            ))}
           </div>
-        )}
+        </section>
       </div>
-    </main>
+    )}
+  </div>
+</main>
   );
 }
