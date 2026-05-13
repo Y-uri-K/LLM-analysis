@@ -28,6 +28,10 @@ type ChatMessage = {
   charts: string[];
 };
 
+const API_URL = (
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
+).replace(/\/$/, "");
+
 export default function HomePage() {
   const [file, setFile] = useState<File | null>(null);
   const [prompt, setPrompt] = useState("");
@@ -44,7 +48,7 @@ export default function HomePage() {
   ): Promise<{ status: number; data: unknown }> =>
     new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open("POST", "http://localhost:8000/analyze");
+      xhr.open("POST", `${API_URL}/analyze`);
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
@@ -152,7 +156,7 @@ export default function HomePage() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:8000/ask", {
+      const response = await fetch(`${API_URL}/ask`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -347,7 +351,7 @@ export default function HomePage() {
                       className="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden"
                     >
                       <img
-                        src={`http://localhost:8000/${chart}`}
+                        src={`${API_URL}/${chart}`}
                         alt={`Chart ${index}`}
                         className="w-full"
                       />
@@ -401,7 +405,7 @@ export default function HomePage() {
                         {item.charts.map((chart, chartIndex) => (
                           <img
                             key={chartIndex}
-                            src={`http://localhost:8000/${chart}`}
+                            src={`${API_URL}/${chart}`}
                             alt={`Follow-up chart ${chartIndex + 1}`}
                             className="w-full bg-zinc-900 rounded-lg border border-zinc-800"
                           />
