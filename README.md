@@ -78,7 +78,7 @@ LLM ANALYSIS/
 ## 1. Клонировать проект
 
 ```bash
-git clone https://github.com/your-repo/llm-analyst.git
+git clone https://github.com/Y-uri-K/LLM-analysis.git
 cd llm-analyst
 ```
 ## 2. Настроить environment variables
