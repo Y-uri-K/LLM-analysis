@@ -346,7 +346,7 @@ export default function HomePage() {
         {result?.charts?.length > 0 && (
           <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-8">
             <h2 className="text-2xl sm:text-3xl font-semibold mb-6">
-              Generated Charts
+              Графики
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
